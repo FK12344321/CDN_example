@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  client-us: 
+    #image: curlimages/curl
+    #command: bash -c "apt -y update && apt-get -y install curl"
+    #stdin_open: true
+    build: . 
+    container_name: clientUS 
+    depends_on:
+      - cdn.example.com
+    networks: 
+      us-network: 
+        ipv4_address: 69.162.81.156 
+
+  client-eu: 
+    #image: curlimages/curl
+    #command: bash -c "apt -y update && apt-get -y install curl"
+    build: .
+    container_name: clientEU
+    depends_on:
+      - cdn.example.com
+    networks: 
+      eu-network: 
+        ipv4_address: 194.177.32.1
+
+  cdn.example.com: 
+    image: bubelov/nginx-alpine-geoip2:latest
+    depends_on:
+      - server-us
+      - server-eu
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    networks:
+      - us-network
+      - eu-network
+
+
+  server-us:
+    container_name: serverUS
+    build: ./serverUS
+    ports: 
+      - "8081:8081"
+    networks:
+      - us-network
+
+  server-eu:
+    container_name: serverEU
+    build: ./serverEU
+    ports: 
+      - "8080:8080"
+    networks:
+      - eu-network
+
+networks: 
+  us-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 69.162.81.156/16
+
+  eu-network:
+    driver: bridge 
+    ipam:
+      config:
+        - subnet: 194.177.32.1/16
+  
+
