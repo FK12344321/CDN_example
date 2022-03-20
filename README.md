@@ -1,0 +1,2 @@
+# CDN_example
+<p>My cdn contains two clients: from Europe and from North America. To launch the project you need to download it, navigate to the root directory of the project and run “docker-compose up –build”. After that you can run either of two clients. For this you can run “docker-compose run <client-us / client-eu>”. After that you can request somefile.svg with “curl http://cdn.example.com”. Depending on the client you use you get either the us flag in svg format or the eu flag. </p>
